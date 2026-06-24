@@ -409,6 +409,16 @@
   #waLink:hover::before{left:100%;}
   #waLink:active{transform:translateY(0);}
 
+  #grupoModelo{
+    display:none;
+    animation:fadeSlideIn .35s ease-out both;
+  }
+
+  @keyframes fadeSlideIn{
+    from{opacity:0;transform:translateY(-10px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
   @media(max-width:480px){
     h1{font-size:34px;}
     .logo-text{letter-spacing:5px;}
@@ -462,6 +472,12 @@
           <div class="err" id="errDisp">Selecione um dispositivo.</div>
         </div>
 
+        <div class="form-group" id="grupoModelo">
+          <label id="labelModelo">Modelo</label>
+          <input type="text" id="modelo" placeholder="">
+          <div class="err" id="errModelo">Preencha este campo.</div>
+        </div>
+
         <a id="waLink" href="#">Receber no WhatsApp</a>
       </form>
 
@@ -497,6 +513,17 @@
   const selectTrigger = document.getElementById('selectTrigger');
   const selectOptions = document.getElementById('selectOptions');
   const selectedLabel = document.getElementById('selectedLabel');
+  const grupoModelo = document.getElementById('grupoModelo');
+  const labelModelo = document.getElementById('labelModelo');
+  const modelo = document.getElementById('modelo');
+  const errModelo = document.getElementById('errModelo');
+
+  const modeloConfig = {
+    'TV Smart':        {label:'Marca da TV',           placeholder:'Ex: Samsung, LG, Sony, TCL...'},
+    'TV Box':          {label:'Modelo da TV Box',       placeholder:'Ex: MXQ Pro, H96 Max, X96 Mini...'},
+    'Celular Android': {label:'Modelo do Celular',      placeholder:'Ex: Samsung Galaxy A54, Moto G...'},
+    'iPhone / iPad':   {label:'Modelo do iPhone/iPad',  placeholder:'Ex: iPhone 14, iPad Air 5...'},
+  };
 
   selectTrigger.addEventListener('click', function(){
     customSelect.classList.toggle('open');
@@ -513,6 +540,17 @@
       customSelect.classList.remove('open');
       selectTrigger.setAttribute('aria-expanded', 'false');
       errDisp.style.display = 'none';
+      const cfg = modeloConfig[li.dataset.value];
+      if(cfg){
+        labelModelo.textContent = cfg.label;
+        modelo.placeholder = cfg.placeholder;
+        modelo.value = '';
+        errModelo.style.display = 'none';
+        grupoModelo.style.display = 'block';
+      } else {
+        grupoModelo.style.display = 'none';
+        modelo.value = '';
+      }
       atualizarLink();
     });
   });
@@ -525,8 +563,10 @@
   });
 
   function atualizarLink(){
-    if(nome.value.trim() && dispositivo.value){
-      const mensagem = `Olá! Quero saber mais sobre o acesso WJ TV.%0ANome: ${nome.value.trim()}%0ADispositivo: ${dispositivo.value}`;
+    const modeloRequerido = grupoModelo.style.display === 'block';
+    if(nome.value.trim() && dispositivo.value && (!modeloRequerido || modelo.value.trim())){
+      let mensagem = `Olá! Quero saber mais sobre o acesso WJ TV.%0ANome: ${nome.value.trim()}%0ADispositivo: ${dispositivo.value}`;
+      if(modeloRequerido && modelo.value.trim()) mensagem += `%0A${labelModelo.textContent}: ${modelo.value.trim()}`;
       waLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${mensagem}`;
       waLink.style.opacity = '1';
       waLink.style.pointerEvents = 'auto';
@@ -558,12 +598,22 @@
       errDisp.style.display = 'none';
     }
 
+    if(grupoModelo.style.display === 'block' && !modelo.value.trim()){
+      errModelo.style.display = 'block';
+      modelo.classList.add('invalid');
+      setTimeout(()=>modelo.classList.remove('invalid'), 400);
+      valid = false;
+    } else {
+      errModelo.style.display = 'none';
+    }
+
     if(!valid){
       e.preventDefault();
     }
   });
 
   nome.addEventListener('input', atualizarLink);
+  modelo.addEventListener('input', atualizarLink);
 
   atualizarLink();
 </script>
