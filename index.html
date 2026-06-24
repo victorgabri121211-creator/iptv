@@ -571,8 +571,8 @@
     const modeloRequerido = grupoModelo.style.display === 'block';
     if(nome.value.trim() && dispositivo.value && (!modeloRequerido || modelo.value.trim())){
       const emoji = dispEmoji[dispositivo.value] || '📡';
-      let mensagem = `👋 Olá! Tenho interesse no acesso WJ TV!%0A%0A👤 Nome: ${nome.value.trim()}%0A${emoji} Dispositivo: ${dispositivo.value}`;
-      if(modeloRequerido && modelo.value.trim()) mensagem += `%0A🔍 ${labelModelo.textContent}: ${modelo.value.trim()}`;
+      let mensagem = `👋 Olá! Tenho interesse no acesso WJ TV!%0A%0A*👤 Nome:* ${nome.value.trim()}%0A*${emoji} Dispositivo:* ${dispositivo.value}`;
+      if(modeloRequerido && modelo.value.trim()) mensagem += `%0A*🔍 ${labelModelo.textContent}:* ${modelo.value.trim()}`;
       waLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${mensagem}`;
       waLink.style.opacity = '1';
       waLink.style.pointerEvents = 'auto';
